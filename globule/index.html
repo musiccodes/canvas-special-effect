@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas - mouse moving colorful balls</title>
+    <style>
+        canvas {
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="mycanvas" width="1000" height="600"></canvas>
+    <script>
+        var mycanvas = document.getElementById('mycanvas');
+        var ctx = mycanvas.getContext("2d");
+
+        var circleArr = [];
+
+        // Circle function
+        function Circle(x, y, r, color) {
+            this.x = x;
+            this.y = y;
+            this.r = r;
+            this.color = "rgb(" + (parseInt(Math.random() * 240) + 9) + "," + (parseInt(Math.random() * 220) + 18) + ", 203)"
+
+            this.dx = Math.random() * 12 - 7;
+            this.dy = Math.random() * 12 - 7;
+
+            circleArr.push(this);
+        }
+
+        // The renderer
+        Circle.prototype.render = function() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.r, 0, Math.PI*2, true);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+        }
+
+        Circle.prototype.update = function() {
+            this.x += this.dx;
+            this.y += this.dy;
+            this.r--;
+
+            if (this.r < 0) {
+                for(var i = 0; i < circleArr.length; i++) {
+                    if (circleArr[i] === this) {
+                        circleArr.splice(i, 1);
+                    };
+                }
+                return false;
+            }
+            return true;
+        }
+     
+        mycanvas.onmousemove =  function(event) {
+            new Circle(event.clientX, event.clientY, 30, "red");
+        }
+
+        // timer
+        setInterval(function(){
+            ctx.clearRect(0, 0, 1000, 600)
+            for (var i = 0; i < circleArr.length; i++) {
+                circleArr[i].update() && circleArr[i].render();
+            }
+        }, 20);
+
+    </script>
+</body>
+</html>
